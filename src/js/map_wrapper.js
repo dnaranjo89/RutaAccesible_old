@@ -105,17 +105,16 @@ AccesibleMap.get_current_location = function(){
     return null;
 };
 
-AccesibleMap.current_location_marker = [];
+AccesibleMap.current_location_markers = [];
 
 AccesibleMap.show_current_location = function (show_location){
     if (show_location){
         function onLocationFound(e) {
             var radius = e.accuracy / 2;
-
-            AccesibleMap.current_location_marker['marker'] = L.marker(e.latlng).addTo(AccesibleMap.mapa)
-                .bindPopup("You are within " + radius + " meters from this point").openPopup();
-
-            AccesibleMap.current_location_marker['circle'] = L.circle(e.latlng, radius).addTo(AccesibleMap.mapa);
+            AccesibleMap.current_location_markers.push({
+                marker: L.marker(e.latlng).addTo(AccesibleMap.mapa).bindPopup("You are within " + radius + " meters from this point").openPopup(),
+                circle: L.circle(e.latlng, radius).addTo(AccesibleMap.mapa)
+            });
         }
         function onLocationError(e) {
             alert(e.message);
@@ -125,6 +124,12 @@ AccesibleMap.show_current_location = function (show_location){
         AccesibleMap.mapa.on('locationerror', onLocationError);
         AccesibleMap.mapa.locate({setView: true, maxZoom: 16});
     }else{
+        // Clean previous current locations
+        AccesibleMap.current_location_markers.map(function(marker){
+            AccesibleMap.mapa.removeLayer(marker.marker);
+            AccesibleMap.mapa.removeLayer(marker.circle);
+        });
+
         AccesibleMap.mapa.removeLayer(AccesibleMap.current_location_marker['marker']);
         AccesibleMap.mapa.removeLayer(AccesibleMap.current_location_marker['circle']);
     }
