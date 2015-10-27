@@ -22,8 +22,30 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
 </head>
   <div id="map"></div>
+  <body>
+    <div id="frame-route" class="hidden">
+      <img id="path-icon" src="/ParkingAccesible/images/path_icon.png">
+      <img id="current-loc-icon" src="/ParkingAccesible/images/current_loc.png">
+      <div id="route-box" class="col-xs-12">
+        <input id="route-from" type="text" class="form-control" placeholder="Desde...">
+        <input id="route-to" type="text" class="form-control" placeholder="hasta...">
+      </div>
+      <div class="text-center">
+        <a id="calculate-route" class="btn btn-default">Ir</a>
+      </div>
+    </div>
+    <div id="frame-search" class="col-md-6 col-lg-4">
+      <div class="input-group">
+        <input id="search-box" type="text" class="form-control" placeholder="Search for..." value="Plaza mayor, Caceres">
+        <span class="input-group-btn">
+          <button id="search-btn" class="btn btn-default" type="button">Buscar</button>
+        </span>
+      </div><!-- /input-group -->
+    </div><!-- /.col-lg-6 -->
   <script>
-    AccesibleMap.setup();
-</script>
+      AccesibleMap.setup();
+      //AccesibleMap.test_route();
+      AccesibleMap.show_current_location();
+  </script>
 </body>
 </html>

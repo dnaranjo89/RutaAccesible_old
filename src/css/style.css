@@ -3,3 +3,67 @@
     width: 100%;
     position: absolute;
 }
+
+#frame-search {
+    margin-top: 15px;
+    max-width: 410px;
+}
+
+#frame-route{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 420px;
+    height: 200px;
+    background: #4285F4 !important;
+}
+
+#frame-route input{
+    background: transparent;
+    color: #E6EFFE;
+    border: none;
+    width: 340px;
+}
+#frame-route input::-webkit-input-placeholder
+{
+  color: #95BBF9;
+}
+
+#frame-route input::-moz-placeholder
+{
+  color: #95BBF9;
+}
+
+#frame-route input::-moz-placeholder
+{
+  color: #95BBF9;
+}
+
+#frame-route input:-ms-input-placeholder
+{
+  color: #95BBF9;
+}
+
+#route-box {
+    position: absolute;
+    top: 0;
+    margin-left: 40px;
+}
+
+#frame-route #path-icon {
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+#current-loc-icon {
+    position: absolute;
+    height: 20px;
+    width: auto;
+    right:5px;
+    top:10px;
+    z-index: 50;
+}
+
+#calculate-route {
+
+}

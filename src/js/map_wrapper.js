@@ -26,9 +26,14 @@ AccesibleMap.setup = function(){
     mapa.setView([39.472499, -6.376273], 15);
     new L.Control.Zoom({ position: 'bottomright' }).addTo(mapa);
     AccesibleMap.mapa = mapa;
+
     $("#search-btn").click(function(){
         var input_query = $("#search-box").val();
         AccesibleMap.search(input_query);
+    });
+
+    $("#current-loc-icon").click(function(){
+        AccesibleMap.add_origen_current_loc();
     });
 };
 
@@ -58,9 +63,10 @@ AccesibleMap.search = function(query){
             var cords = location.geometry.coordinates;
             var pos =  [cords[1], cords[0]];
             var title = location.properties.label;
+            var attr = "'" + title + "',[" + pos + "]";
             var html_title = location.properties.label +
                 '<div class="text-center">' +
-                '<a href="#" class="btn btn-default btn-xs" onclick="AccesibleMap.add_destination(['+pos+']);">Ir Aqui</a>'+
+                '<a href="#" class="btn btn-default btn-xs" onclick="AccesibleMap.add_destination(' + attr + ');">Ir Aqui</a>'+
                 '</>';
             var marker = AccesibleMap.add_marker(pos, html_title);
             marker.openPopup();
@@ -71,8 +77,29 @@ AccesibleMap.search = function(query){
     });
 };
 
-AccesibleMap.add_destination = function(destination){
-    console.log("add destination: " +destination);
+AccesibleMap.add_origen_current_loc = function(){
+    var current_location = null;
+    $('#route-from').val("Posición actual");
+};
+
+AccesibleMap.add_destination = function(title, destination){
+    // Switch to route frame
+    $('#frame-search').toggleClass('hidden', true);
+    $('#frame-route').toggleClass('hidden', false);
+    // Update fields
+    $('#route-from').val("Posición actual");
+    $('#route-to').val(title);
+
+    // Draw route
+    var origen = AccesibleMap.get_current_location();
+    var parking = null;
+    var step_penalty = true;
+    AccesibleMap.draw_complete_route(origen, parking, destination, step_penalty);
+};
+
+AccesibleMap.show_current_location = function(){
+    // TODO renturn current location
+    return null;
 };
 
 AccesibleMap.show_current_location = function (){
