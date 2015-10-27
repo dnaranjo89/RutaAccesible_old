@@ -38,6 +38,15 @@ AccesibleMap.setup = function(){
     $("#show-current-pos").change(function() {
         AccesibleMap.show_current_location(this.checked);
     });
+
+    $("#calculate-route").click(function(){
+        // Draw route
+        var origen = $('#route-from').val();
+        var parking = null;
+        var destination = $('#route-to').val();
+        var step_penalty = true;
+        AccesibleMap.draw_complete_route(origen, parking, destination, step_penalty);
+    });
 };
 
 AccesibleMap.test_route = function(){
@@ -48,7 +57,15 @@ AccesibleMap.test_route = function(){
     AccesibleMap.draw_complete_route(origen, parking, destination, avoid_stairs);
 };
 
-AccesibleMap.draw_complete_route = function (origen, parking, destination, step_penalty){
+AccesibleMap.draw_complete_route = function (){
+    // Draw route
+    var $origen = $('#route-from');
+    var origen = [$origen.attr('data-lat'), $origen.attr('data-lon')];
+    var parking = null;
+    var $destination = $('#route-to');
+    var destination = [$destination.attr('data-lat'), $destination.attr('data-lon')];
+    var step_penalty = true;
+
     AccesibleMap.calculate_route_auto(origen, parking).addTo(AccesibleMap.mapa);
     AccesibleMap.calculate_route_pedestrian(parking, destination, step_penalty).addTo(AccesibleMap.mapa);
 };
@@ -81,7 +98,12 @@ AccesibleMap.search = function(query){
 };
 
 AccesibleMap.add_origen_current_loc = function(){
-    var current_location = null;
+    AccesibleMap.show_current_location(true);
+    navigator.geolocation.getCurrentPosition(function(current_pos){
+        var $origen = $('#route-from');
+        $origen.attr("data-lat", current_pos[0]);
+        $origen.attr("data-lon", current_pos[1]);
+    });
     $('#route-from').val("Posición actual");
 };
 
@@ -89,15 +111,17 @@ AccesibleMap.add_destination = function(title, destination){
     // Switch to route frame
     $('#frame-search').toggleClass('hidden', true);
     $('#frame-route').toggleClass('hidden', false);
-    // Update fields
-    $('#route-from').val("Posición actual");
-    $('#route-to').val(title);
 
-    // Draw route
-    var origen = AccesibleMap.get_current_location();
-    var parking = null;
-    var step_penalty = true;
-    AccesibleMap.draw_complete_route(origen, parking, destination, step_penalty);
+    // Update destination field
+    var $destination = $('#route-to');
+    $destination.val(title);
+    $destination.attr("data-lat", destination[0]);
+    $destination.attr("data-lon", destination[1]);
+
+    if (AccesibleMap.allow_geolocation){
+        AccesibleMap.add_origen_current_loc();
+        AccesibleMap.draw_complete_route();
+    }
 };
 
 AccesibleMap.get_current_location = function(){
@@ -107,8 +131,8 @@ AccesibleMap.get_current_location = function(){
 
 AccesibleMap.current_location_markers = [];
 
-AccesibleMap.show_current_location = function (show_location){
-    if (show_location){
+AccesibleMap.show_current_location = function (enable_location){
+    if (enable_location){
         function onLocationFound(e) {
             var radius = e.accuracy / 2;
             AccesibleMap.current_location_markers.push({
@@ -133,6 +157,7 @@ AccesibleMap.show_current_location = function (show_location){
         AccesibleMap.mapa.removeLayer(AccesibleMap.current_location_marker['marker']);
         AccesibleMap.mapa.removeLayer(AccesibleMap.current_location_marker['circle']);
     }
+    AccesibleMap.allow_geolocation = enable_location;
 };
 
 AccesibleMap.show_accessible_parkings = function (show_parkings){
