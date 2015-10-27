@@ -112,7 +112,7 @@ AccesibleMap.show_current_location = function (show_location){
         function onLocationFound(e) {
             var radius = e.accuracy / 2;
             AccesibleMap.current_location_markers.push({
-                marker: L.marker(e.latlng).addTo(AccesibleMap.mapa).bindPopup("You are within " + radius + " meters from this point").openPopup(),
+                marker: L.marker(e.latlng).addTo(AccesibleMap.mapa).bindPopup("<div class='text-center'>Estás aquí<br> (precisión " + radius + " metros)</div>").openPopup(),
                 circle: L.circle(e.latlng, radius).addTo(AccesibleMap.mapa)
             });
         }
@@ -132,6 +132,14 @@ AccesibleMap.show_current_location = function (show_location){
 
         AccesibleMap.mapa.removeLayer(AccesibleMap.current_location_marker['marker']);
         AccesibleMap.mapa.removeLayer(AccesibleMap.current_location_marker['circle']);
+    }
+};
+
+AccesibleMap.show_accessible_parkings = function (show_parkings){
+    if (show_parkings){
+        // TODO Show parkings
+    }else{
+        // TODO hide parkings
     }
 };
 
