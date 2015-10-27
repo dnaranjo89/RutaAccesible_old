@@ -31,11 +31,11 @@
         <input id="route-to" type="text" class="form-control" placeholder="hasta...">
       </div>
       <div>
-        <div class="checkbox">
+        <!--<div class="checkbox">
           <label>
             <input id="include-parking" type="checkbox"> Buscar estacionamiento mas cercano
           </label>
-        </div>
+        </div>-->
         <div class="checkbox">
           <label>
             <input id="avoid-steps" type="checkbox"> Evitar escaleras
@@ -49,7 +49,7 @@
     <div id="frame-search" class="col-md-6 col-lg-4">
       <div id="search-box">
         <div class="input-group">
-          <input id="search-input" type="text" class="form-control" placeholder="Search for..." value="Plaza mayor, Caceres">
+          <input id="search-input" type="text" class="form-control" placeholder="Search for..." value="Calle Carvajal Lancaster, 14">
           <span class="input-group-btn">
             <button id="search-btn" class="btn btn-default" type="button">Buscar</button>
           </span>
@@ -68,17 +68,6 @@
     </div><!-- /.col-lg-6 -->
   <script>
       AccesibleMap.setup();
-      //AccesibleMap.test_route();
-      //AccesibleMap.show_current_location();
-      var callback_get_parking = function(data){
-        var plazas = [];
-        for (i=0; i<data.results.bindings.length; i++) {
-            plazas.push([data.results.bindings[i].geo_lat_plaza.value, data.results.bindings[i].geo_long_plaza.value]);
-        }
-        console.log(plazas);
-      };
-
-     AccesibleMap.get_closest_parking(["39.47505", "-6.3714"],callback_get_parking);
   </script>
 </body>
 </html>
