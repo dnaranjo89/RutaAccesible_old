@@ -28,12 +28,15 @@ AccesibleMap.setup = function(){
     AccesibleMap.mapa = mapa;
 
     $("#search-btn").click(function(){
-        var input_query = $("#search-box").val();
+        var input_query = $("#search-input").val();
         AccesibleMap.search(input_query);
     });
 
     $("#current-loc-icon").click(function(){
         AccesibleMap.add_origen_current_loc();
+    });
+    $("#show-current-pos").change(function() {
+        AccesibleMap.show_current_location(this.checked);
     });
 };
 
@@ -97,27 +100,34 @@ AccesibleMap.add_destination = function(title, destination){
     AccesibleMap.draw_complete_route(origen, parking, destination, step_penalty);
 };
 
-AccesibleMap.show_current_location = function(){
+AccesibleMap.get_current_location = function(){
     // TODO renturn current location
     return null;
 };
 
-AccesibleMap.show_current_location = function (){
-    function onLocationFound(e) {
-        var radius = e.accuracy / 2;
+AccesibleMap.current_location_marker = [];
 
-        L.marker(e.latlng).addTo(AccesibleMap.mapa)
-            .bindPopup("You are within " + radius + " meters from this point").openPopup();
+AccesibleMap.show_current_location = function (show_location){
+    if (show_location){
+        function onLocationFound(e) {
+            var radius = e.accuracy / 2;
 
-        L.circle(e.latlng, radius).addTo(AccesibleMap.mapa);
+            AccesibleMap.current_location_marker['marker'] = L.marker(e.latlng).addTo(AccesibleMap.mapa)
+                .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+            AccesibleMap.current_location_marker['circle'] = L.circle(e.latlng, radius).addTo(AccesibleMap.mapa);
+        }
+        function onLocationError(e) {
+            alert(e.message);
+        }
+
+        AccesibleMap.mapa.on('locationfound', onLocationFound);
+        AccesibleMap.mapa.on('locationerror', onLocationError);
+        AccesibleMap.mapa.locate({setView: true, maxZoom: 16});
+    }else{
+        AccesibleMap.mapa.removeLayer(AccesibleMap.current_location_marker['marker']);
+        AccesibleMap.mapa.removeLayer(AccesibleMap.current_location_marker['circle']);
     }
-    function onLocationError(e) {
-        alert(e.message);
-    }
-
-    AccesibleMap.mapa.on('locationfound', onLocationFound);
-    AccesibleMap.mapa.on('locationerror', onLocationError);
-    AccesibleMap.mapa.locate({setView: true, maxZoom: 16});
 };
 
 /**

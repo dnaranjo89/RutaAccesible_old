@@ -5,8 +5,11 @@
 }
 
 #frame-search {
-    margin-top: 15px;
+    padding-top: 15px;
     max-width: 410px;
+    width: 420px;
+    height: 200px;
+    background: #ffffff;
 }
 
 #frame-route{
@@ -15,7 +18,7 @@
     top: 0;
     width: 420px;
     height: 200px;
-    background: #4285F4 !important;
+    background: #4285F4;
 }
 
 #frame-route input{

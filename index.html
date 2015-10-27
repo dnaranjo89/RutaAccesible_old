@@ -35,17 +35,24 @@
       </div>
     </div>
     <div id="frame-search" class="col-md-6 col-lg-4">
-      <div class="input-group">
-        <input id="search-box" type="text" class="form-control" placeholder="Search for..." value="Plaza mayor, Caceres">
-        <span class="input-group-btn">
-          <button id="search-btn" class="btn btn-default" type="button">Buscar</button>
-        </span>
-      </div><!-- /input-group -->
+      <div id="search-box">
+        <div class="input-group">
+          <input id="search-input" type="text" class="form-control" placeholder="Search for..." value="Plaza mayor, Caceres">
+          <span class="input-group-btn">
+            <button id="search-btn" class="btn btn-default" type="button">Buscar</button>
+          </span>
+        </div><!-- /input-group -->
+      </div>
+      <div class="checkbox">
+        <label>
+          <input id="show-current-pos" type="checkbox"> Mostrar posicion actual
+        </label>
+      </div>
     </div><!-- /.col-lg-6 -->
   <script>
       AccesibleMap.setup();
       //AccesibleMap.test_route();
-      AccesibleMap.show_current_location();
+      //AccesibleMap.show_current_location();
   </script>
 </body>
 </html>
