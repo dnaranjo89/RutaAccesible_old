@@ -22,6 +22,11 @@
     background: #4285F4;
 }
 
+.checkbox img{
+    height: 18px;
+    width: auto;
+}
+
 #frame-route input{
     background: transparent;
     color: #E6EFFE;
