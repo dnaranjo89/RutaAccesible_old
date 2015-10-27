@@ -38,14 +38,15 @@ AccesibleMap.setup = function(){
     $("#show-current-pos").change(function() {
         AccesibleMap.show_current_location(this.checked);
     });
+    $("#show-accessible-parkings").change(function() {
+        // TODO show parkings
+    });
 
     $("#calculate-route").click(function(){
-        // Draw route
-        var origen = $('#route-from').val();
-        var parking = null;
-        var destination = $('#route-to').val();
-        var step_penalty = true;
-        AccesibleMap.draw_complete_route(origen, parking, destination, step_penalty);
+        if (AccesibleMap.allow_geolocation){
+            AccesibleMap.add_origen_current_loc();
+        }
+        AccesibleMap.draw_complete_route();
     });
 };
 
@@ -60,14 +61,29 @@ AccesibleMap.test_route = function(){
 AccesibleMap.draw_complete_route = function (){
     // Draw route
     var $origen = $('#route-from');
-    var origen = [$origen.attr('data-lat'), $origen.attr('data-lon')];
+    var origen = [$origen.attr('data-lat'), $origen.attr('data-lng')];
     var parking = null;
     var $destination = $('#route-to');
-    var destination = [$destination.attr('data-lat'), $destination.attr('data-lon')];
+    var destination = [$destination.attr('data-lat'), $destination.attr('data-lng')];
     var step_penalty = true;
 
-    AccesibleMap.calculate_route_auto(origen, parking).addTo(AccesibleMap.mapa);
-    AccesibleMap.calculate_route_pedestrian(parking, destination, step_penalty).addTo(AccesibleMap.mapa);
+    var callback_get_parking = function(data){
+        var plazas = [];
+        for (i=0; i<data.results.bindings.length; i++) {
+            plazas.push([data.results.bindings[i].geo_lat_plaza.value, data.results.bindings[i].geo_long_plaza.value]);
+        }
+        console.log(plazas);
+        var best_parking = plazas[0];
+        console.log("origen:"+origen);
+        console.log("destino:"+destination);
+        AccesibleMap.calculate_route_auto(origen, best_parking).addTo(AccesibleMap.mapa);
+        AccesibleMap.calculate_route_pedestrian(best_parking, destination, step_penalty).addTo(AccesibleMap.mapa);
+    };
+
+    var parkings = AccesibleMap.get_closest_parking(destination, callback_get_parking);
+    console.log(destination);
+    console.log(parkings);
+
 };
 
 AccesibleMap.search = function(query){
@@ -86,7 +102,7 @@ AccesibleMap.search = function(query){
             var attr = "'" + title + "',[" + pos + "]";
             var html_title = location.properties.label +
                 '<div class="text-center">' +
-                '<a href="#" class="btn btn-default btn-xs" onclick="AccesibleMap.add_destination(' + attr + ');">Ir Aqui</a>'+
+                '<a href="#" class="btn btn-default btn-xs" onclick="AccesibleMap.add_destination_and_calc_route(' + attr + ');">Ir Aqui</a>'+
                 '</>';
             var marker = AccesibleMap.add_marker(pos, html_title);
             marker.openPopup();
@@ -102,12 +118,12 @@ AccesibleMap.add_origen_current_loc = function(){
     navigator.geolocation.getCurrentPosition(function(current_pos){
         var $origen = $('#route-from');
         $origen.attr("data-lat", current_pos[0]);
-        $origen.attr("data-lon", current_pos[1]);
+        $origen.attr("data-lng", current_pos[1]);
     });
     $('#route-from').val("Posición actual");
 };
 
-AccesibleMap.add_destination = function(title, destination){
+AccesibleMap.add_destination_and_calc_route = function(title, destination){
     // Switch to route frame
     $('#frame-search').toggleClass('hidden', true);
     $('#frame-route').toggleClass('hidden', false);
@@ -116,7 +132,7 @@ AccesibleMap.add_destination = function(title, destination){
     var $destination = $('#route-to');
     $destination.val(title);
     $destination.attr("data-lat", destination[0]);
-    $destination.attr("data-lon", destination[1]);
+    $destination.attr("data-lng", destination[1]);
 
     if (AccesibleMap.allow_geolocation){
         AccesibleMap.add_origen_current_loc();
@@ -139,6 +155,9 @@ AccesibleMap.show_current_location = function (enable_location){
                 marker: L.marker(e.latlng).addTo(AccesibleMap.mapa).bindPopup("<div class='text-center'>Estás aquí<br> (precisión " + radius + " metros)</div>").openPopup(),
                 circle: L.circle(e.latlng, radius).addTo(AccesibleMap.mapa)
             });
+            var $origen = $('#route-from');
+            $origen.attr("data-lng", e.latlng.lng);
+            $origen.attr("data-lat", e.latlng.lat);
         }
         function onLocationError(e) {
             alert(e.message);
@@ -171,6 +190,28 @@ AccesibleMap.show_accessible_parkings = function (show_parkings){
 /**
  * Internal functions
  */
+
+AccesibleMap.get_closest_parking = function (location, callback_get_parking){
+    var pk = "select ?uri ?geo_lat_plaza ?geo_long_plaza ?distancia {" +
+            "{select ?uri ?geo_lat_plaza ?geo_long_plaza ((bif:st_distance(bif:st_point(" +
+            "\"" + location[0] + "\"^^xsd:decimal," +
+            "\"" + location[1] + "\"^^xsd:decimal),bif:st_point(?geo_lat_plaza,?geo_long_plaza))) AS ?distancia) where{" +
+            "?uri a om:PlazaMovilidadReducida ." +
+            "?uri geo:lat ?geo_lat_plaza ." +
+            "?uri geo:long ?geo_long_plaza ." +
+            "}order by asc (?distancia) } FILTER (?distancia < 1) }limit 3";
+
+    var plazas = [];
+
+    var graphQuerySPARQL="";
+    var preQuerySPARQL ="http://opendata.caceres.es/sparql";
+
+    $.ajax({
+    data: {"default-graph-uri":graphQuerySPARQL, query:pk, format: 'json'},
+    url: preQuerySPARQL,
+    cache:false
+    }).done(callback_get_parking);
+};
 
 AccesibleMap.add_marker = function(location, title, type){
     var options = {

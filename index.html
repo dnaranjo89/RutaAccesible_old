@@ -30,6 +30,18 @@
         <input id="route-from" type="text" class="form-control" placeholder="Desde...">
         <input id="route-to" type="text" class="form-control" placeholder="hasta...">
       </div>
+      <div>
+        <div class="checkbox">
+          <label>
+            <input id="include-parking" type="checkbox"> Buscar estacionamiento mas cercano
+          </label>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input id="avoid-steps" type="checkbox"> Evitar escaleras
+          </label>
+        </div>
+      </div>
       <div class="text-center">
         <a id="calculate-route" class="btn btn-default">Ir</a>
       </div>
@@ -58,6 +70,15 @@
       AccesibleMap.setup();
       //AccesibleMap.test_route();
       //AccesibleMap.show_current_location();
+      var callback_get_parking = function(data){
+        var plazas = [];
+        for (i=0; i<data.results.bindings.length; i++) {
+            plazas.push([data.results.bindings[i].geo_lat_plaza.value, data.results.bindings[i].geo_long_plaza.value]);
+        }
+        console.log(plazas);
+      };
+
+     AccesibleMap.get_closest_parking(["39.47505", "-6.3714"],callback_get_parking);
   </script>
 </body>
 </html>
