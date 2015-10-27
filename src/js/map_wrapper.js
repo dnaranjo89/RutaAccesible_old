@@ -1,6 +1,20 @@
 
 var AccesibleMap = {};
 
+AccesibleMap.test_route = function(){
+    var origen = L.latLng(39.474346, -6.375368);
+    var parking = L.latLng(39.473684, -6.377592);
+    var destination = L.latLng(39.473949, -6.378597);
+    var avoid_stairs = true;
+    AccesibleMap.draw_complete_route(origen, parking, destination, avoid_stairs);
+};
+
+AccesibleMap.draw_complete_route = function (origen, parking, destination, step_penalty){
+    AccesibleMap.calculate_route_auto(origen, parking).addTo(AccesibleMap.mapa);
+    AccesibleMap.calculate_route_pedestrian(parking, destination, step_penalty).addTo(AccesibleMap.mapa);
+};
+
+
 AccesibleMap.setup = function(){
     var mapa = L.map('map', { zoomControl: false });
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
