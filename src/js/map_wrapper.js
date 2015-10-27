@@ -3,7 +3,7 @@ var AccesibleMap = {};
 
 // Setup accesible marker
 AccesibleMap.accesible_icon = L.icon({
-        iconUrl: '/simplegeo/images/accesible_marker.png',
+        iconUrl: '/ParkingAccesible/images/accesible_marker.png',
         //shadowUrl: 'leaf-shadow.png',
 
         iconSize:     [38, 38], // size of the icon
@@ -39,7 +39,7 @@ AccesibleMap.setup = function(){
         AccesibleMap.show_current_location(this.checked);
     });
     $("#show-accessible-parkings").change(function() {
-        // TODO show parkings
+        AccesibleMap.show_accessible_parkings(this.checked);
     });
 
     $("#calculate-route").click(function(){
@@ -179,39 +179,30 @@ AccesibleMap.show_current_location = function (enable_location){
     AccesibleMap.allow_geolocation = enable_location;
 };
 
+AccesibleMap.markers_parking = [];
+
 AccesibleMap.show_accessible_parkings = function (show_parkings){
     if (show_parkings){
-        // TODO Show parkings
+        var callback_show_parkings = function(data){
+            var plazas = [];
+            for (i=0; i<data.results.bindings.length; i++) {
+                plazas.push([data.results.bindings[i].geo_lat.value, data.results.bindings[i].geo_long.value]);
+                var location = [data.results.bindings[i].geo_lat.value, data.results.bindings[i].geo_long.value];
+                AccesibleMap.markers_parking.push(AccesibleMap.add_marker(location, "parking","parking"));
+            }
+          };
+        AccesibleMap.get_all_parkings(callback_show_parkings);
     }else{
-        // TODO hide parkings
+        // Clean previous parkings
+        AccesibleMap.markers_parking.map(function(marker){
+            AccesibleMap.mapa.removeLayer(marker);
+        });
     }
 };
 
 /**
  * Internal functions
  */
-
-AccesibleMap.get_closest_parking = function (location, callback_get_parking){
-    var pk = "select ?uri ?geo_lat_plaza ?geo_long_plaza ?distancia {" +
-            "{select ?uri ?geo_lat_plaza ?geo_long_plaza ((bif:st_distance(bif:st_point(" +
-            "\"" + location[0] + "\"^^xsd:decimal," +
-            "\"" + location[1] + "\"^^xsd:decimal),bif:st_point(?geo_lat_plaza,?geo_long_plaza))) AS ?distancia) where{" +
-            "?uri a om:PlazaMovilidadReducida ." +
-            "?uri geo:lat ?geo_lat_plaza ." +
-            "?uri geo:long ?geo_long_plaza ." +
-            "}order by asc (?distancia) } FILTER (?distancia < 1) }limit 3";
-
-    var plazas = [];
-
-    var graphQuerySPARQL="";
-    var preQuerySPARQL ="http://opendata.caceres.es/sparql";
-
-    $.ajax({
-    data: {"default-graph-uri":graphQuerySPARQL, query:pk, format: 'json'},
-    url: preQuerySPARQL,
-    cache:false
-    }).done(callback_get_parking);
-};
 
 AccesibleMap.add_marker = function(location, title, type){
     var options = {
@@ -259,4 +250,56 @@ AccesibleMap.calculate_route = function (waypoints, mode, costing_options){
     };
 
     return L.Routing.control(options);
+};
+
+
+/**
+ *  Opendata Queries
+ */
+
+AccesibleMap.get_closest_parking = function (location, callback_get_parking){
+    var pk = "select ?uri ?geo_lat_plaza ?geo_long_plaza ?distancia {" +
+            "{select ?uri ?geo_lat_plaza ?geo_long_plaza ((bif:st_distance(bif:st_point(" +
+            "\"" + location[0] + "\"^^xsd:decimal," +
+            "\"" + location[1] + "\"^^xsd:decimal),bif:st_point(?geo_lat_plaza,?geo_long_plaza))) AS ?distancia) where{" +
+            "?uri a om:PlazaMovilidadReducida ." +
+            "?uri geo:lat ?geo_lat_plaza ." +
+            "?uri geo:long ?geo_long_plaza ." +
+            "}order by asc (?distancia) } FILTER (?distancia < 1) }limit 3";
+
+    var plazas = [];
+
+    var graphQuerySPARQL="";
+    var preQuerySPARQL ="http://opendata.caceres.es/sparql";
+
+    $.ajax({
+    data: {"default-graph-uri":graphQuerySPARQL, query:pk, format: 'json'},
+    url: preQuerySPARQL,
+    cache:false
+    }).done(callback_get_parking);
+};
+
+
+AccesibleMap.get_all_parkings = function(callback_parkings) {
+
+  var query=   "select ?URI ?geo_lat ?geo_long where{" +
+            "?URI a om:PlazaMovilidadReducida." +
+            "?URI om:situadoEnVia ?om_situadoEnVia." +
+            "?URI geo:lat ?geo_lat." +
+            "?URI geo:long ?geo_long." +
+            "}";
+
+  var plazas = [];
+
+  var graphQuerySPARQL="";
+  var preQuerySPARQL ="http://opendata.caceres.es/sparql";
+
+  $.ajax({
+    data: {"default-graph-uri":graphQuerySPARQL, query:query, format: 'json'},
+    url: preQuerySPARQL,
+    cache:false
+  }).done(callback_parkings);
+
+  return (plazas);
+
 };
