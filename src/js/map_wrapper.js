@@ -3,7 +3,7 @@ var AccesibleMap = {};
 
 // Setup accesible marker
 AccesibleMap.accesible_icon = L.icon({
-        iconUrl: '/ParkingAccesible/images/accesible_marker.png',
+        iconUrl: 'images/accesible_marker.png',
         iconSize:     [38, 38], // size of the icon
         iconAnchor:   [22, 22], // point of the icon which will correspond to marker's location
         popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor

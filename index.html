@@ -2,23 +2,19 @@
 <html>
   <head>
   <title>My Routing Map</title>
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
   <link rel="stylesheet" href="leaflet/leaflet.css">
   <link rel="stylesheet" href="lrm-valhalla/leaflet.routing.valhalla.css">
   <link rel="stylesheet" href="src/css/style.css">
   <script src="leaflet/leaflet.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="https://mapzen.com/tangram/tangram.min.js"></script>
   <script src="leaflet-routing-machine/leaflet-routing-machine.js"></script>
   <script src="lrm-valhalla/lrm-valhalla.js"></script>
   <script src="src/js/map_wrapper.js"></script>
 
-  <!-- Latest compiled and minified CSS -->
+  <!-- Bootstrap -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
-
-  <!-- Optional theme -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
-
-  <!-- Latest compiled and minified JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
 </head>
   <div id="map"></div>
@@ -58,14 +54,14 @@
       <div class="checkbox">
         <label>
           <input id="show-current-pos" type="checkbox">
-          <img src="/ParkingAccesible/images/current_loc_black.png" alt="">
+          <img src="images/current_loc_black.png" alt="">
           Mostrar posicion actual
         </label>
       </div>
       <div class="checkbox">
         <label>
           <input id="show-accessible-parkings" type="checkbox">
-          <img src="/ParkingAccesible/images/accesible_marker.png" alt="">
+          <img src="images/accesible_marker.png" alt="">
           Mostrar estacionamientos accesibles
         </label>
       </div>
